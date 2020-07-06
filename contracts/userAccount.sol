@@ -171,6 +171,21 @@ contract DCA{
     }
 
 
+
+    function editEtherToTokenSubs(address tokenAddress, uint256 interval, uint256 etherToSell, uint256 gas, uint256 gasPrice, bool activate) public {
+        ETHToTokenSubs[tokenAddress] = ETHToTokenInfo(etherToSell, interval, gas, gasPrice, activate);
+    }
+
+
+    function editTokenToEtherSubs(address tokenAddress, uint256 interval, uint256 tokensToSell, uint256 gas, uint256 gasPrice, bool activate) public {
+        TokenToETHSubs[tokenAddress] = TokenToETHInfo(tokensToSell, interval, gas, gasPrice, activate);
+
+    }
+
+    function editTokenToTokenSubs(address tokenToSellAddress, address tokenToBuyAddress, uint256 interval, uint256 tokensToSell, uint256 gas, uint256 gasPrice, bool activate) public {
+        TokenToTokenSubs[tokenToSellAddress] = TokenToTokenInfo(tokensToSell, tokenToBuyAddress, interval, gas, gasPrice, activate);
+    }
+
     
 
     function withdrawToken(address tokenAddress) public{

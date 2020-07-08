@@ -75,11 +75,22 @@ abstract contract ERC20 {
 }
 
 
+abstract contract Aion {
+    uint256 public serviceFee;
+    function ScheduleCall(uint256 blocknumber, address to, uint256 value, uint256 gaslimit, uint256 gasprice, bytes memory data, bool schedType) public virtual payable returns (uint256,address);
+    function cancellScheduledTx(uint256 blocknumber, address from, address to, uint256 value, uint256 gaslimit, uint256 gasprice,
+                         uint256 fee, bytes calldata data, uint256 aionId, bool schedType) external virtual returns(bool);
+    
+}
+
+
+
 contract DCA{
     
     address payable owner;
-    UniswapFactory uniswapInstance = UniswapFactory(0xf5D915570BC477f9B8D6C0E980aA81757A3AaC36);
-    
+    address payable aionClientAccount;
+    UniswapFactory uniswapInstance = UniswapFactory(0x9c83dCE8CA20E9aAF9D3efc003b2ea62aBC08351);
+    Aion aion = Aion(0xFcFB45679539667f7ed55FA59A15c8Cad73d9a4E);
     
     struct ETHToTokenInfo{
         uint256 etherToSell;
@@ -110,29 +121,47 @@ contract DCA{
     mapping(address => TokenToETHInfo) public TokenToETHSubs;
     mapping(address => TokenToTokenInfo) public TokenToTokenSubs;
     
-    
+
     constructor() public payable {
     }
+
 
     function setup() public {
         require(owner==address(0));
         owner = msg.sender;
+        uint256 callCost = 100000*tx.gasprice + aion.serviceFee();
+        (, address account) = aion.ScheduleCall{value:callCost}( block.timestamp + 1 days, address(this), 0, 100000, tx.gasprice, hex'00', true);
+        aionClientAccount = payable(account);
     }
 
 
-    //ETH to token 
-    function ETHToToken(address tokenAddress) private returns(uint256 tokens_bought){
-        ETHToTokenInfo storage info = ETHToTokenSubs[tokenAddress]; 
-        address exchangeAddress = uniswapInstance.getExchange(tokenAddress);
-        UniswapExchange exchange = UniswapExchange(exchangeAddress);
-        tokens_bought = exchange.ethToTokenSwapInput{value: info.etherToSell}(1, now);
-    }
-    
-    function escheduleEtherToToken(address tokenAddress, uint256 interval, uint256 etherToSell, uint256 gas, uint256 gasPrice) public {
+    // ************************************************************************************************************************************************
+    function SubscribeEtherToToken(address tokenAddress, uint256 interval, uint256 etherToSell, uint256 gas, uint256 gasPrice) public {
+        require(aionClientAccount!=address(0),'Aion account has not been setup');
+        require(msg.sender==owner);
         ETHToTokenSubs[tokenAddress] = ETHToTokenInfo(etherToSell, interval, gas, gasPrice, true);
         ETHToToken(tokenAddress);
     }
     
+    
+    function ETHToToken(address tokenAddress) public returns(uint256 tokens_bought){
+        require( (msg.sender == aionClientAccount) || (msg.sender == owner));
+        ETHToTokenInfo storage info = ETHToTokenSubs[tokenAddress]; 
+        address exchangeAddress = uniswapInstance.getExchange(tokenAddress);
+        UniswapExchange exchange = UniswapExchange(exchangeAddress);
+        tokens_bought = exchange.ethToTokenSwapInput{value: info.etherToSell}(1, now);
+        
+        bytes memory data = abi.encodeWithSelector(bytes4(keccak256('ETHToToken(address)')),tokenAddress); 
+        uint256 callCost = info.gas*info.gasPrice + aion.serviceFee();
+        aion.ScheduleCall{value:callCost}( block.timestamp + info.interval, address(this), 0, info.gas, info.gasPrice, data, true);
+    }
+    
+    
+    
+    
+    // ************************************************************************************************************************************************
+    
+
     
     // Token to ETH
     function TokenToETH(address tokenAddress) public returns(uint256 eth_bought){
@@ -144,15 +173,7 @@ contract DCA{
         eth_bought = exchange.tokenToEthSwapInput(info.tokensToSell, 1, now);
     }
     
-    function escheduleTokenToEther(address tokenAddress, uint256 interval, uint256 tokensToSell, uint256 gas, uint256 gasPrice) public {
-        TokenToETHSubs[tokenAddress] = TokenToETHInfo(tokensToSell, interval, gas, gasPrice, true);
-        address exchangeAddress = uniswapInstance.getExchange(tokenAddress);
-        ERC20(tokenAddress).approve(exchangeAddress, uint256(-1));
-        TokenToETH(tokenAddress);
-    }
-
-
-
+    
     // Token to token    
     function TokenToToken(address tokenToSellAddress) public payable returns(uint256 tokens_bought){
         TokenToTokenInfo storage info = TokenToTokenSubs[tokenToSellAddress];
@@ -163,7 +184,18 @@ contract DCA{
         tokens_bought = exchange.tokenToTokenSwapInput(info.tokensToSell, 1, 1, now, info.tokenToBuyAddress);
     }
     
-    function escheduleTokenToToken(address tokenToSellAddress, address tokenToBuyAddress, uint256 interval, uint256 tokensToSell, uint256 gas, uint256 gasPrice) public {
+    
+    
+    
+    
+    function SubscribeTokenToEther(address tokenAddress, uint256 interval, uint256 tokensToSell, uint256 gas, uint256 gasPrice) public {
+        TokenToETHSubs[tokenAddress] = TokenToETHInfo(tokensToSell, interval, gas, gasPrice, true);
+        address exchangeAddress = uniswapInstance.getExchange(tokenAddress);
+        ERC20(tokenAddress).approve(exchangeAddress, uint256(-1));
+        TokenToETH(tokenAddress);
+    }
+    
+    function SubscribeTokenToToken(address tokenToSellAddress, address tokenToBuyAddress, uint256 interval, uint256 tokensToSell, uint256 gas, uint256 gasPrice) public {
         TokenToTokenSubs[tokenToSellAddress] = TokenToTokenInfo(tokensToSell, tokenToBuyAddress, interval, gas, gasPrice, true);
         address exchangeAddress = uniswapInstance.getExchange(tokenToSellAddress);
         ERC20(tokenToSellAddress).approve(exchangeAddress, uint256(-1));
@@ -171,7 +203,11 @@ contract DCA{
     }
 
 
-
+    
+    
+    
+    
+    
     function editEtherToTokenSubs(address tokenAddress, uint256 interval, uint256 etherToSell, uint256 gas, uint256 gasPrice, bool activate) public {
         ETHToTokenSubs[tokenAddress] = ETHToTokenInfo(etherToSell, interval, gas, gasPrice, activate);
     }
@@ -185,6 +221,9 @@ contract DCA{
     function editTokenToTokenSubs(address tokenToSellAddress, address tokenToBuyAddress, uint256 interval, uint256 tokensToSell, uint256 gas, uint256 gasPrice, bool activate) public {
         TokenToTokenSubs[tokenToSellAddress] = TokenToTokenInfo(tokensToSell, tokenToBuyAddress, interval, gas, gasPrice, activate);
     }
+    
+    
+    
 
     
 

@@ -9,9 +9,9 @@ contract DCA{
     
     address payable private owner;
     address payable private aionClientAccount;
-    UniswapFactory uniswapInstance = UniswapFactory(0x9c83dCE8CA20E9aAF9D3efc003b2ea62aBC08351);
-    Aion aion = Aion(0xFcFB45679539667f7ed55FA59A15c8Cad73d9a4E);
-    
+    UniswapFactory uniswapInstance;
+    Aion aion;
+
     struct ETHToTokenInfo{
         uint256 etherToSell;
         uint256 interval;
@@ -46,9 +46,12 @@ contract DCA{
     }
 
 
+
     // ************************************************************************************************************************************************
     function setup() payable public {
         require(owner==address(0));
+        uniswapInstance = UniswapFactory(0x9c83dCE8CA20E9aAF9D3efc003b2ea62aBC08351);
+        aion = Aion(0xFcFB45679539667f7ed55FA59A15c8Cad73d9a4E);
         owner = msg.sender;
         uint256 callCost = 100000*tx.gasprice + aion.serviceFee();
         (, address account) = aion.ScheduleCall{value:callCost}( block.timestamp + 1 days, address(this), 0, 100000, tx.gasprice, hex'00', true);
@@ -203,10 +206,7 @@ contract DCA{
         
     }
     
-    fallback() external payable {
-        
-    }
-    
+
     
     
     

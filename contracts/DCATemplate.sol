@@ -12,6 +12,7 @@ contract DCA{
     Aion aion;
     uint256 gasAmount;
     uint256 maxGasPrice;
+    address[] tokenList;
     
     struct ETHToTokenInfo{
         uint256 etherToSell;
@@ -38,7 +39,7 @@ contract DCA{
     mapping(address => ETHToTokenInfo) private ETHToTokenSubs;
     mapping(address => TokenToETHInfo) private TokenToETHSubs;
     mapping(address => TokenToTokenInfo) private TokenToTokenSubs;
-
+    mapping(address=>bool) private TokenExist;
 
     event ETHToTokenPurchase(address indexed token, uint256 tokensBought, uint256 etherSold);
     event TokenToETHPurchase(address indexed token, uint256 tokensSold, uint256 etherBought);
@@ -63,6 +64,7 @@ contract DCA{
     // ************************************************************************************************************************************************
     function SubscribeEtherToToken(address tokenAddress, uint256 interval, uint256 etherToSell) public {
         require(msg.sender == owner);
+        registerToken(tokenAddress);
         ETHToTokenInfo storage info = ETHToTokenSubs[tokenAddress];
         uint256 nextPurchase = info.nextPurchase==0 ? now + interval: info.nextPurchase;
         ETHToTokenSubs[tokenAddress] = ETHToTokenInfo(etherToSell, interval, true, nextPurchase);
@@ -92,6 +94,7 @@ contract DCA{
     // ************************************************************************************************************************************************
     function SubscribeTokenToEther(address tokenAddress, uint256 interval, uint256 tokensToSell) public {
         require(msg.sender == owner);
+        registerToken(tokenAddress);
         ETHToTokenInfo storage info = ETHToTokenSubs[tokenAddress];
         uint256 nextPurchase = info.nextPurchase==0 ? now + interval: info.nextPurchase;
         TokenToETHSubs[tokenAddress] = TokenToETHInfo(tokensToSell, interval, true, nextPurchase);
@@ -126,6 +129,7 @@ contract DCA{
     // Token to token    
     function SubscribeTokenToToken(address tokenToSellAddress, address tokenToBuyAddress, uint256 interval, uint256 tokensToSell) public {
         require(msg.sender == owner);
+        registerToken(tokenToBuyAddress);
         ETHToTokenInfo storage info = ETHToTokenSubs[tokenToSellAddress];
         uint256 nextPurchase = info.nextPurchase==0 ? now + interval: info.nextPurchase;
         TokenToTokenSubs[tokenToSellAddress] = TokenToTokenInfo(tokensToSell, tokenToBuyAddress, interval, true, nextPurchase);
@@ -231,6 +235,15 @@ contract DCA{
     }
 
 
+    function registerToken(address tokenAddress) internal {
+        if(TokenExist[tokenAddress]==true) return;
+        tokenList.push() = tokenAddress;
+        TokenExist[tokenAddress] == true;
+    }
+    
+    function getTokens() public view returns (address[] memory){
+        return tokenList;
+    }
 
 
     // ************************************************************************************************************************************************

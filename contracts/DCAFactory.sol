@@ -2,7 +2,7 @@ pragma solidity ^0.6;
 
 import 'https://github.com/ETH-Pantheon/Dollar-Cost-Averaging/blob/master/contracts/CloneFactory.sol';
 
-abstract contract DCA{
+abstract contract interfaceDCA{
     function setup(address owner_) virtual public returns(bool);
 }
 
@@ -17,7 +17,7 @@ contract DCAFactory is CloneFactory{
     
     function createDCA() public{
         address userContract = createClone(DCATemplate);
-        require(DCA(userContract).setup(msg.sender));
+        require(interfaceDCA(userContract).setup(msg.sender));
         users[msg.sender] = userContract;
     }
     

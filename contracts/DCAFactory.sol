@@ -8,7 +8,7 @@ abstract contract interfaceDCA{
 
 contract DCAFactory is CloneFactory{
     
-    address payable DCATemplate;
+    address DCATemplate;
     
     event AccountCreated(address indexed owner, address account);
     

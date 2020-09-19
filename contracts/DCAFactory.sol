@@ -8,22 +8,19 @@ abstract contract interfaceDCA{
 
 contract DCAFactory is CloneFactory{
     
-    address DCATemplate = 0x276Eb817A919414EE1b67DAf3A6C29a20f61384F;
-    mapping(address => address) private users;
-    constructor() public {
-        
+    address payable DCATemplate;
+    
+    event AccountCreated(address indexed owner, address account);
+    
+    constructor(address DCATemplate_) public {
+        DCATemplate = DCATemplate_;
     }
     
     
     function createDCA() public{
         address userContract = createClone(DCATemplate);
         require(interfaceDCA(userContract).setup(msg.sender));
-        users[msg.sender] = userContract;
+        AccountCreated(msg.sender, userContract);
     }
-    
-    
-    function getUsersAccount() public view returns(address){
-        return users[msg.sender];
-    }
-    
+        
 }

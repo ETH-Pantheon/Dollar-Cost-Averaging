@@ -20,7 +20,7 @@ contract DCAFactory is CloneFactory{
     function createDCA() public{
         address userContract = createClone(DCATemplate);
         require(interfaceDCA(userContract).setup(msg.sender));
-        AccountCreated(msg.sender, userContract);
+        emit AccountCreated(msg.sender, userContract);
     }
         
 }

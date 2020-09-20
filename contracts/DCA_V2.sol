@@ -25,8 +25,8 @@ contract DCA{
     // ************************************************************************************************************************************************
     function setup(address owner_) payable public returns(bool){
         require(owner==address(0));
-        uniswapInstance = UniswapFactory(0xf5D915570BC477f9B8D6C0E980aA81757A3AaC36);
-        aion = Aion(0xeFc1d6479e529D9e7C359fbD16B31D405778CE6e);
+        uniswapInstance = UniswapFactory(0xD3E51Ef092B2845f10401a0159B2B96e8B6c3D30);
+        aion = Aion(0x2fC197cD7897f41957F72e8E390d5a7cF2858CBF);
         owner = payable(owner_);
         return true;
     }

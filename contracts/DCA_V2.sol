@@ -32,14 +32,14 @@ contract DCA{
     }
 
 
-    function SubscribeDCA(address tokenToSell, address tokenToBuy, uint256 interval, uint256 amountToSell) public {
+    function SubscribeDCA(address tokenToSell, address tokenToBuy, uint256 interval, uint256 amountToSell) public payable {
         require(msg.sender == owner);
         address exchangeAddress = uniswapInstance.getExchange(tokenToSell);
         IERC20(tokenToSell).approve(exchangeAddress, uint256(-1));
         TokenToToken(tokenToSell, tokenToBuy, interval, amountToSell);
     }
     
-    function SubscribeDCA(address tokenToSell, address tokenToBuy, uint256 interval, uint256 amountToSell, uint256 refillEther) public {
+    function SubscribeDCA(address tokenToSell, address tokenToBuy, uint256 interval, uint256 amountToSell, uint256 refillEther) public payable {
         require(msg.sender == owner);
         address exchangeAddress = uniswapInstance.getExchange(tokenToSell);
         IERC20(tokenToSell).approve(exchangeAddress, uint256(-1));

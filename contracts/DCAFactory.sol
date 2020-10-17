@@ -1,6 +1,6 @@
 pragma solidity >= 0.5 < 0.8;
 
-import 'DCAUserAccount.sol';
+/* import 'DCAUserAccount.sol';
 import 'implementationsRegistry';
 
 contract DCAFactory{
@@ -23,5 +23,6 @@ contract DCAFactory{
         require(interfaceDCA(address(userContract)).setup(msg.sender));
         emit AccountCreated(msg.sender, address(userContract));
     }
+    */
         
 }

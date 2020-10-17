@@ -1,7 +1,7 @@
 pragma solidity >= 0.5 < 0.8;
 
-import './DCAUserAccount.sol';
-import './implementationsRegistry.sol';
+import "./DCAUserAccount.sol";
+import "./implementationsRegistry.sol";
 
 contract DCAFactory{
     address public admin;

@@ -1,5 +1,5 @@
 pragma solidity >= 0.5 < 0.8;
 
-interface interfaceDCA{
+interface IDCA{
     function setup(address owner_) external returns(bool);
 }

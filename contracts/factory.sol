@@ -1,6 +1,6 @@
 pragma solidity >= 0.5 < 0.8;
 
-import './dcaUserAccount.sol';
+import './DCAUserAccount.sol';
 import './implementationsRegistry';
 
 contract DCAFactory{

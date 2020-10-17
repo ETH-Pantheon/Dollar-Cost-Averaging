@@ -1,8 +1,7 @@
 pragma solidity >=0.5 < 0.8;
 
 
-interface RegistryInterface{
-    
+interface RegistryInterface{   
     function getLatestVersionAddress() external view returns (address);
     function register(address _impl) external;
 }

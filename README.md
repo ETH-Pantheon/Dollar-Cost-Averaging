@@ -6,3 +6,5 @@ Development of onchain Automatic Marker Makers (AMM) such as Uniswap, Curve, etc
 Athenea solves this problems by integrating Aion Scheduling system with a set gas-efficient smart contracts. Athenea allows automatic execution of periodical purchases of a particular token in Uniswap. Furthermore, it allows users to get together and create voults, such that the gas needed to execute transactions is shared amoung participants, reducing significantly the cost associated with broadcasting transactions in the ethereum network. Athenea code is open sourced, the system is completelly trustless and users retain control of their assets at all times.
 
 # How it works:
+
+![](./images/howitworks.png)

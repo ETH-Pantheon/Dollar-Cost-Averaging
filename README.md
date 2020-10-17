@@ -1,4 +1,4 @@
-# Athene: Authomatic -on chain- Dollar Cost Averaging.
+# Athene: Authomatic Dollar Cost Averaging.
 Dollar-cost averaging (DCA) is an investment strategy in which an investor divides up the total amount to be invested across periodic purchases of a target asset in an effort to reduce the impact of volatility on the overall purchase. The purchases occur regardless of the asset's price and at regular intervals; in effect, this strategy removes much of the detailed work of attempting to time the market in order to make purchases of equities at the best prices.[source]
 
 Development of onchain Automatic Marker Makers (AMM) such as Uniswap, Curve, etc., generates a valuable oportunity for using DCA as an investment strategy on-chain. Unfortunatly, this requires manually executing transactions periodically given that the Ethereum Network does not support natively scheduling transactions. Furthermore, the high gas prices have become a barrier for small investors as sending periodical transactions could be prohibitely expensive.

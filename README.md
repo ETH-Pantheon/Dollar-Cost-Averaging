@@ -10,4 +10,22 @@ Athenea solves this problems by integrating Aion Scheduling system with a set ga
 ![](./images/howitworks.png)
 
 
-... Under construction
+In order to make use of the system, users create an Athene DCA account using teh Athena DCA web app. This account is an smart contract that contains all the necessary code to make calls to Uniswap and interfaces with Aion Scheduling system. The same account can be used to manage several DCA subscriptions (recurrent purchases of a particular token in Uniswap). Athena DCA web app provides a easy an intuitive user interface to manage their accounts, providing access to deposits, withdrawal of purchased tokens, start and stop DCA subscriptions, and provide statistical data about each subscription. Users simply select the token used to make the purchase, the token to purchase, and the time interval between pruchases (minutes, hours or days).quities at the best prices.
+
+# Fees
+The cost incurred while using Athene DCA can be devided in three parts:
+
+* Transaction cost: this is the product of the gas consumed by the transaction and the gas price.
+* Automatic schuduling fee: This is the fee required by Aion which is fixed (currently this fee is 0.000132 ETH per transaction).
+* Athene Fee: This fee is set to 0.04% of the total amount to purchase in each transaction.
+
+For instance, if you create a DCA for buying 100 DAI worth of Ether the fee Athena fee is 0.04 DAI.
+
+
+# Pooled DCA
+Pooled DCA in Athene will allow to use the power of the community, reducing significantly the costs (a single transaction for all the participants plus a single Aion fee for all the participants). This solution is still on development.
+
+
+# Status
+Athene DCA is available for tesing on the Kovan testNet, visit [ETHPantheon web site](https://athene.ethpantheon.com)
+

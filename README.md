@@ -27,5 +27,5 @@ Pooled DCA in Athene will allow to use the power of the community, reducing sign
 
 
 # Status
-Athene DCA is available for tesing on the Kovan testNet, visit [ETHPantheon web site](https://athene.ethpantheon.com)
+Athene DCA is available for testing on the Kovan testNet, visit [ETHPantheon web site](https://athene.ethpantheon.com)
 

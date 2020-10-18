@@ -20,7 +20,7 @@ contract DCAFactory{
     }
     
     function createDCA() public{
-        dcaUserAccount userContract = new dcaUserAccount(address(Registry));
+        dcaUserAccount userContract = new dcaUserAccount(address(Registry),admin);
         require(IDCA(address(userContract)).setup(msg.sender));
         emit AccountCreated(msg.sender, address(userContract));
     }

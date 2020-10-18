@@ -2,7 +2,6 @@ pragma solidity >= 0.5 < 0.8;
 
 import "./DCAUserAccount.sol";
 import "./implementationsRegistry.sol";
-import "./IDCA.sol";
 
 contract DCAFactory{
     address public admin;
@@ -20,8 +19,8 @@ contract DCAFactory{
     }
     
     function createDCA() public{
-        dcaUserAccount userContract = new dcaUserAccount(address(Registry),admin);
-        require(IDCA(address(userContract)).setup(msg.sender));
+        dcaUserAccount userContract = new dcaUserAccount(address(Registry));
+        require(userContract.setup(msg.sender,admin));
         emit AccountCreated(msg.sender, address(userContract));
     }
     

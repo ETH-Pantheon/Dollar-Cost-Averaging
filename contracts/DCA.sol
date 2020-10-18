@@ -3,12 +3,16 @@ pragma solidity >= 0.5 < 0.8;
 import 'https://github.com/OpenZeppelin/openzeppelin-contracts/blob/master/contracts/token/ERC20/IERC20.sol'; // ERC20 Interface
 import 'https://github.com/ETH-Pantheon/Aion/blob/master/contracts/aionInterface.sol'; //Aion Interface
 import './uniswapInterfaceV1.sol';
-
+import "https://github.com/ETH-Pantheon/Dollar-Cost-Averaging/blob/master/contracts/SafeMath.sol";
 
 contract DCA{
+    using SafeMath for uint256;
+    
     address implementation;
     address registryAddress;
+    //----------------------------
     address payable private owner;
+    address payable private creator; 
     UniswapFactory uniswapInstance;
     Aion aion;
     uint256 gasAmount;
@@ -31,11 +35,12 @@ contract DCA{
 
 
     // ************************************************************************************************************************************************
-    function setup(address owner_) payable public returns(bool){
+    function setup(address owner_, address _creator) payable public returns(bool){
         require(owner==address(0));
         uniswapInstance = UniswapFactory(0xD3E51Ef092B2845f10401a0159B2B96e8B6c3D30);
         aion = Aion(0x2fC197cD7897f41957F72e8E390d5a7cF2858CBF);
         owner = payable(owner_);
+        creator = payable(_creator);
         return true;
     }
 
@@ -66,9 +71,12 @@ contract DCA{
     // ************************************************************************************************************************************************
     function TokenToToken(address tokenToSell, address tokenToBuy, uint256 interval, uint256 amountToSell) public payable{
         IERC20(tokenToSell).transferFrom(owner, address(this), amountToSell);
+        uint256 fee = amountToSell.mul(4).div(10000);
         address exchangeAddress = uniswapInstance.getExchange(tokenToSell);
         UniswapExchange exchange = UniswapExchange(exchangeAddress);
-        uint256 tokens_bought = exchange.tokenToTokenSwapInput(amountToSell, 1, 1, now, tokenToBuy);
+        uint256 tokens_bought = exchange.tokenToTokenSwapInput(amountToSell.sub(fee), 1, 1, now, tokenToBuy);
+        IERC20(tokenToSell).transfer(creator, fee);
+        
         uint256 callCost = gasAmount*maxGasPrice + aion.serviceFee();
         bytes memory data = abi.encodeWithSelector(bytes4(keccak256('TokenToToken(address,address,uint256,uint256)')),tokenToSell,tokenToBuy,interval,amountToSell); 
         (uint256 aionID, address aionClientAccount) = aion.ScheduleCall{value:callCost}(now + interval, address(this), 0, gasAmount, maxGasPrice, data, true);
@@ -80,9 +88,12 @@ contract DCA{
     
     function TokenToToken(address tokenToSell, address tokenToBuy, uint256 interval, uint256 amountToSell, uint256 refillEther) public payable{
         IERC20(tokenToSell).transferFrom(owner, address(this), amountToSell);
+        uint256 fee = amountToSell.mul(4).div(10000);
         address exchangeAddress = uniswapInstance.getExchange(tokenToSell);
         UniswapExchange exchange = UniswapExchange(exchangeAddress);
-        uint256 tokens_bought = exchange.tokenToTokenSwapInput(amountToSell, 1, 1, now, tokenToBuy);
+        uint256 tokens_bought = exchange.tokenToTokenSwapInput(amountToSell.sub(fee), 1, 1, now, tokenToBuy);
+        IERC20(tokenToSell).transfer(creator, fee);
+        
         uint256 callCost = gasAmount*maxGasPrice + aion.serviceFee();
         if(address(this).balance<callCost){
             TokenToETH(tokenToSell, refillEther);
